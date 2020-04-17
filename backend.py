@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from __future__ import print_function
 import numpy as np
 import json
 from concurrent.futures import ThreadPoolExecutor
@@ -11,6 +12,12 @@ import libsplooshkaboom
 libsplooshkaboom.initialize()
 
 executor = ThreadPoolExecutor(32)
+
+def square_to_num(xy):
+	return xy[0] + 8 * xy[1]
+
+def num_to_square(num):
+	return num % 8, num / 8
 
 def compute_sploosh_kaboom(hits, misses, squids_gotten):
 	# Make sure all of our values are sane.
@@ -25,17 +32,18 @@ def compute_sploosh_kaboom(hits, misses, squids_gotten):
 	misses = libsplooshkaboom.vectori(misses)
 	libsplooshkaboom.do_computation(
 		results,
-		hits,
-		misses,
+		[square_to_num(square) for square in hits],
+		[square_to_num(square) for square in misses],
 		squids_gotten,
 	)
 	return zip(*[iter(list(results.probabilities))]*8)
 
 def do_work(payload):
+	print("Working on:", payload)
 	distribution = compute_sploosh_kaboom(payload["hits"], payload["misses"], payload["squids_gotten"])
 	return {
 		"proabilities": distribution,
-		"highest_prob": [int(i) for i in np.argmax(distribution)],
+		"highest_prob": num_to_square(np.argmax(distribution)),
 	}
 
 class APIHandler(tornado.web.RequestHandler):
