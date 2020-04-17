@@ -32,6 +32,8 @@ struct PossibleBoard {
 			return false;
 		if (miss_mask & squids)
 			return false;
+		if (squids_gotten == -1)
+			return true;
 		int squids_hit = 0;
 		squids_hit += (squid2 & ~hit_mask) == 0;
 		squids_hit += (squid3 & ~hit_mask) == 0;
