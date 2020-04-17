@@ -5,6 +5,7 @@
 
 struct Results {
 	std::vector<double> probabilities;
+	double observation_prob;
 };
 
 void initialize();

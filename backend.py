@@ -53,9 +53,9 @@ def compute_sploosh_kaboom(hits, misses, squids_gotten):
 			squids_gotten,
 		)
 		if not is_possible:
-			cache[key] = False
+			cache[key] = False, 0
 		else:
-			cache[key] = zip(*[iter(list(results.probabilities))]*8)
+			cache[key] = zip(*[iter(list(results.probabilities))]*8), results.observation_prob
 	return cache[key]
 
 possible_moves = [num_to_square(i) for i in range(64)]
@@ -64,7 +64,7 @@ def do_work(payload):
 	print("Working on:", payload)
 	hit_squares  = [square_to_num(square) for square in payload["hits"]]
 	miss_squares = [square_to_num(square) for square in payload["misses"]]
-	distribution = compute_sploosh_kaboom(
+	distribution, observation_prob = compute_sploosh_kaboom(
 		hit_squares,
 		miss_squares,
 		payload["squids_gotten"],
@@ -87,6 +87,7 @@ def do_work(payload):
 		"is_possible": True,
 		"probabilities": distribution,
 		"highest_prob": best_square,
+		"observation_prob": observation_prob,
 	}
 
 class APIHandler(tornado.web.RequestHandler):

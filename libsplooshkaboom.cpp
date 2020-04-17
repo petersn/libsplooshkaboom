@@ -167,6 +167,7 @@ bool do_computation(
 	// Renormalize the distribution.
 	for (int i = 0; i < 64; i++)
 		results.probabilities[i] /= total_probability;
+	results.observation_prob = total_probability;
 	return true;
 }
 
